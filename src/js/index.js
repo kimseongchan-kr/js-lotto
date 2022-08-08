@@ -15,6 +15,10 @@ const lottoPriceInput = document.querySelector('.lotto-price-input');
 
 const winningNumberForm = document.querySelector('#winning-number-form');
 
+const winningNumberInput = document.querySelectorAll('.winning-number');
+
+const bonusNumberInput = document.querySelector('.bonus-number');
+
 const target = { title: listTitleElement, show: showListElement, hide: hideListElement };
 
 DrawForm({
@@ -27,17 +31,39 @@ DrawForm({
 
 Toggle({ target, checkbox: lottoNumberToggleButton });
 
+const winningNumberArray = [...winningNumberInput, bonusNumberInput];
+
 winningNumberForm.addEventListener('submit', (event) => {
   event.preventDefault();
-  const inputTextArray = [...document.querySelectorAll('.winning-number'), document.querySelector('.bonus-number')]
+  const inputTextArray = winningNumberArray
     .map((element) => parseInt(element.value, 10))
     .sort()
     .reduce((previousValue, currentValue) => {
       if (!previousValue) return false;
-      return previousValue === currentValue ? false : currentValue;
+      return previousValue === currentValue;
     });
 
   if (!inputTextArray) {
     alert('로또 번호에는 중복된 숫자를 입력할 수 없습니다.');
+  }
+});
+
+winningNumberInput.forEach((element, index) => {
+  element.addEventListener('keyup', (event) => {
+    const { keyCode, target } = event;
+
+    if ((keyCode > 47 || keyCode < 58) && target.value.length >= 2) {
+      target.value = target.value.slice(0, 2);
+      winningNumberArray[index + 1].value = null;
+      winningNumberArray[index + 1].focus();
+    }
+  });
+});
+
+bonusNumberInput.addEventListener('keyup', (event) => {
+  const { keyCode, target } = event;
+
+  if ((keyCode > 47 || keyCode < 58) && target.value.length >= 2) {
+    target.value = target.value.slice(0, 2);
   }
 });
